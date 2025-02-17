@@ -31,18 +31,23 @@ func main() {
 		return
 	}
 
-	fmt.Print("Enter 'on'(yes external) or 'off'(no external): ")
 	var choice string
-	fmt.Scanln(&choice)
+	for {
+		fmt.Print("Enter 'on'(yes external) or 'off'(no external): ")
+		fmt.Scanln(&choice)
+
+		if choice == "on" || choice == "off" {
+			break
+		} else {
+			fmt.Println("Invalid choice. Please enter 'on' or 'off'.")
+		}
+	}
 
 	var fileName string
 	if choice == "on" {
 		fileName = "on.txt"
 	} else if choice == "off" {
 		fileName = "off.txt"
-	} else {
-		fmt.Println("Invalid choice. Please enter 'on' or 'off'.")
-		return
 	}
 
 	cmd := exec.Command("cp", fileName, "-r", "/boot/firmware/config.txt")
