@@ -24,7 +24,13 @@ sudo nano /etc/profile
 
 AT THE BOTTOM OF THE FILE ADD:
 
-alias extog="cd ~/extog && sudo ./toggle"
+alias extog='cd ~/extog && sudo ./toggle'
+
+now you can just run:
+
+extog
+
+😁
 
 # ENJOY!!! if you have any issues find and @ me in the pwnagotchi unofficial discord: https://discord.gg/wBgZPn6M
 
