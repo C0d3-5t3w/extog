@@ -8,7 +8,7 @@ Toggles external wifi card on or off for the Pwnagotchi.
 
 cd ~
 
-sudo git clone ""
+sudo git clone "https://github.com/C0d3-5t3w/extog.git"
 
 cd ~/extog
 
