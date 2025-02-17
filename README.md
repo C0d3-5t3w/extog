@@ -26,6 +26,8 @@ AT THE BOTTOM OF THE FILE ADD:
 
 alias extog='cd ~/extog && sudo ./toggle'
 
+* you'll need to reboot for the alias to become available *
+
 now you can just run:
 
 extog
