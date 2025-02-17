@@ -54,5 +54,13 @@ func main() {
 		fmt.Println("If you are still having trouble, please contact 5T3W.")
 	} else {
 		fmt.Println("File copied successfully.")
+		rebootCmd := exec.Command("reboot")
+		err := rebootCmd.Run()
+		if err != nil {
+			fmt.Println("Error rebooting the system:", err)
+			fmt.Println("Please reboot the system manually.")
+		} else {
+			fmt.Println("System rebooting...")
+		}
 	}
 }
