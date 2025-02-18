@@ -18,7 +18,7 @@
 
 * sudo ./toggle
 
-# Make an alias for easy access:
+# Make an alias for easy access, run:
 
 * sudo nano /etc/profile
 
