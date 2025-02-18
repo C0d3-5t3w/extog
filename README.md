@@ -26,9 +26,7 @@
 
 * alias extog='cd ~/extog && sudo ./toggle'
 
-# You'll need to reboot for the alias to become available 
-
-# Now you can just run:
+# You'll need to reboot for the alias to become available and after you can just run:
 
 * extog
 
