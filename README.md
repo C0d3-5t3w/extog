@@ -20,7 +20,7 @@
 
 # Make an alias for easy access:
 
-sudo nano /etc/profile
+* sudo nano /etc/profile
 
 # Put this line at the bottom of the file:
 
