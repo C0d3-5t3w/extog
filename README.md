@@ -1,36 +1,36 @@
 # extog
 
-Toggles external wifi card on or off for the Pwnagotchi.
+* Toggles external wifi card on or off for the Pwnagotchi.
 
 # How to: 
 
-(you'll need to add go back to path and enable it in sudoers or you can 'sudo apt-get golang' which will be enough)
+* (you'll need to add go back to path and enable it in sudoers or you can 'sudo apt-get golang' which will be enough)
 
-cd ~
+* cd ~
 
-sudo git clone "https://github.com/C0d3-5t3w/extog.git"
+* sudo git clone "https://github.com/C0d3-5t3w/extog.git"
 
-cd ~/extog
+* cd ~/extog
 
-sudo make build
+* sudo make build
 
-sudo chmod +x toggle
+* sudo chmod +x toggle
 
-sudo ./toggle
+* sudo ./toggle
 
 # Make an alias for easy access:
 
 sudo nano /etc/profile
 
-AT THE BOTTOM OF THE FILE ADD:
+# Put this line at the bottom of the file:
 
-alias extog='cd ~/extog && sudo ./toggle'
+* alias extog='cd ~/extog && sudo ./toggle'
 
-* you'll need to reboot for the alias to become available *
+# You'll need to reboot for the alias to become available 
 
-now you can just run:
+# Now you can just run:
 
-extog
+* extog
 
 😁
 
