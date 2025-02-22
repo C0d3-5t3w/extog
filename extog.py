@@ -20,6 +20,9 @@ class ExternalWiFiToggle(plugins.Plugin):
         if not self.ready:
             return "Plugin not ready"
 
+        logging.info(f"[ExternalWiFiToggle] Received {request.method} request to path: {path}")
+        logging.info(f"[ExternalWiFiToggle] Form data: {request.form}")
+
         try:
             if request.method == "GET":
                 if path == "/" or not path:
@@ -43,15 +46,18 @@ class ExternalWiFiToggle(plugins.Plugin):
                     return render_template_string(ret)
 
             elif request.method == "POST":
-                if path == "/" or path == "toggle":  # Handle both root and toggle paths
+                logging.info("[ExternalWiFiToggle] Processing POST request")
+                if path == "toggle" or path == "/toggle":
                     state = request.form.get('state', '').lower()
+                    logging.info(f"[ExternalWiFiToggle] State value: {state}")
+                    
                     if state in ['on', 'off']:
                         result = self._toggle_adapter(state)
                         ret = f'''
                         <html>
                             <head>
                                 <title>WiFi Adapter Toggle Result</title>
-                                <meta http-equiv="refresh" content="3;url=./">
+                                <meta http-equiv="refresh" content="3;url=/plugins/ExternalWiFiToggle/">
                             </head>
                             <body>
                                 <h1>{result}</h1>
@@ -60,6 +66,9 @@ class ExternalWiFiToggle(plugins.Plugin):
                         </html>
                         '''
                         return render_template_string(ret)
+                    else:
+                        logging.error(f"[ExternalWiFiToggle] Invalid state value: {state}")
+                        return "Invalid state value"
 
         except Exception as e:
             logging.error(f"[ExternalWiFiToggle] Web Error: {str(e)}")
@@ -69,18 +78,30 @@ class ExternalWiFiToggle(plugins.Plugin):
 
     def _toggle_adapter(self, state):
         try:
+            logging.info(f"[ExternalWiFiToggle] Attempting to run extog with state: {state}")
+            
             process = subprocess.Popen(['extog'], 
                                     stdin=subprocess.PIPE, 
                                     stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE)
+                                    stderr=subprocess.PIPE,
+                                    universal_newlines=True)
             
-            process.stdin.write(b"yes\n")
+            # Send yes and wait a moment
+            process.stdin.write("yes\n")
             process.stdin.flush()
             
-            process.stdin.write(f"{state}\n".encode())
+            # Send state and wait a moment
+            process.stdin.write(f"{state}\n")
             process.stdin.flush()
             
-            process.communicate()
+            # Get output for debugging
+            stdout, stderr = process.communicate()
+            logging.info(f"[ExternalWiFiToggle] Output: {stdout}")
+            if stderr:
+                logging.error(f"[ExternalWiFiToggle] Errors: {stderr}")
+            
+            if process.returncode != 0:
+                raise Exception(f"Process failed with return code {process.returncode}")
             
             return f"WiFi adapter switched to {'external' if state == 'on' else 'internal'} successfully"
         except Exception as e:
