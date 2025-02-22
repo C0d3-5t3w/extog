@@ -87,15 +87,12 @@ class ExternalWiFiToggle(plugins.Plugin):
                                     stderr=subprocess.PIPE,
                                     universal_newlines=True)
             
-            # Send yes and wait a moment
             process.stdin.write("yes\n")
             process.stdin.flush()
             
-            # Send state and wait a moment
             process.stdin.write(f"{state}\n")
             process.stdin.flush()
             
-            # Get output for debugging
             stdout, stderr = process.communicate()
             logging.info(f"[ExternalWiFiToggle] Output: {stdout}")
             if stderr:
