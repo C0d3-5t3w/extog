@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 func main() {
@@ -16,18 +17,28 @@ func main() {
 	var removeChoice string
 	fmt.Scanln(&removeChoice)
 
+	removeChoice = strings.ToLower(removeChoice)
 	if removeChoice == "yes" {
-		rmCmd := exec.Command("rm", "/boot/firmware/config.txt")
+		_, err := os.Stat("/boot/firmware/config.txtbk")
+		if os.IsNotExist(err) {
+			cpCmd := exec.Command("cp", "/boot/firmware/config.txt", "/boot/firmware/config.txtbk")
+			err = cpCmd.Run()
+			if err != nil {
+				fmt.Println("Error creating backup:", err)
+				return
+			}
+			fmt.Println("Backup created successfully.")
+		}
 
-		err := rmCmd.Run()
+		rmCmd := exec.Command("rm", "/boot/firmware/config.txt")
+		err = rmCmd.Run()
 		if err != nil {
 			fmt.Println("Error removing config.txt:", err)
 			return
-		} else {
-			fmt.Println("config.txt removed successfully.")
 		}
+		fmt.Println("config.txt removed successfully.")
 	} else {
-		fmt.Println("Exiting program as config.txt was not removed.")
+		fmt.Println("Exiting program because config.txt was not removed.")
 		return
 	}
 
@@ -36,10 +47,19 @@ func main() {
 		fmt.Print("Enter 'on'(yes external) or 'off'(no external): ")
 		fmt.Scanln(&choice)
 
+		choice = strings.ToLower(choice)
 		if choice == "on" || choice == "off" {
 			break
 		} else {
-			fmt.Println("Invalid choice. Please enter 'on' or 'off'.")
+			fmt.Println("Invalid input, restoring backup...")
+			restoreCmd := exec.Command("cp", "/boot/firmware/config.txtbk", "/boot/firmware/config.txt")
+			err := restoreCmd.Run()
+			if err != nil {
+				fmt.Println("Error restoring backup:", err)
+				return
+			}
+			fmt.Println("Backup restored successfully. Exiting program.")
+			return
 		}
 	}
 
