@@ -20,55 +20,56 @@ class ExternalWiFiToggle(plugins.Plugin):
         if not self.ready:
             return "Plugin not ready"
 
-        logging.info(f"[ExternalWiFiToggle] Received {request.method} request to path: {path}")
-        logging.info(f"[ExternalWiFiToggle] Form data: {request.form}")
+        logging.info(f"[ExternalWiFiToggle] DEBUG - Full request: {request}")
+        logging.info(f"[ExternalWiFiToggle] DEBUG - Path: '{path}'")
+        logging.info(f"[ExternalWiFiToggle] DEBUG - Method: {request.method}")
+        logging.info(f"[ExternalWiFiToggle] DEBUG - Form data: {request.form}")
+        logging.info(f"[ExternalWiFiToggle] DEBUG - Args: {request.args}")
 
         try:
             if request.method == "GET":
-                if path == "/" or not path:
-                    ret = '''
+                ret = '''
+                <html>
+                    <head>
+                        <title>WiFi Adapter Toggle</title>
+                        <meta name="csrf_token" content="{{ csrf_token() }}">
+                    </head>
+                    <body>
+                        <h1>WiFi Adapter Toggle</h1>
+                        <form method="POST" action="">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="submit" name="state" value="ON" style="font-size: 20px; padding: 10px 20px; margin: 5px;">
+                            <input type="submit" name="state" value="OFF" style="font-size: 20px; padding: 10px 20px; margin: 5px;">
+                        </form>
+                        <p>ON = Use External WiFi Adapter<br>OFF = Use Internal WiFi Adapter</p>
+                    </body>
+                </html>
+                '''
+                return render_template_string(ret)
+
+            elif request.method == "POST":
+                logging.info("[ExternalWiFiToggle] Processing POST request")
+                state = request.form.get('state', '').lower()
+                logging.info(f"[ExternalWiFiToggle] State value: {state}")
+                
+                if state in ['on', 'off']:
+                    result = self._toggle_adapter(state)
+                    ret = f'''
                     <html>
                         <head>
-                            <title>WiFi Adapter Toggle</title>
-                            <meta name="csrf_token" content="{{ csrf_token() }}">
+                            <title>WiFi Adapter Toggle Result</title>
+                            <meta http-equiv="refresh" content="3;url=/plugins/ExternalWiFiToggle/">
                         </head>
                         <body>
-                            <h1>WiFi Adapter Toggle</h1>
-                            <form method="POST" action="/plugins/ExternalWiFiToggle/toggle">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <input type="submit" name="state" value="ON" style="font-size: 20px; padding: 10px 20px; margin: 5px;" title="Enable External Adapter">
-                                <input type="submit" name="state" value="OFF" style="font-size: 20px; padding: 10px 20px; margin: 5px;" title="Use Internal Adapter">
-                            </form>
-                            <p>ON = Use External WiFi Adapter<br>OFF = Use Internal WiFi Adapter</p>
+                            <h1>{result}</h1>
+                            <p>Redirecting back in 3 seconds...</p>
                         </body>
                     </html>
                     '''
                     return render_template_string(ret)
-
-            elif request.method == "POST":
-                logging.info("[ExternalWiFiToggle] Processing POST request")
-                if path == "toggle" or path == "/toggle":
-                    state = request.form.get('state', '').lower()
-                    logging.info(f"[ExternalWiFiToggle] State value: {state}")
-                    
-                    if state in ['on', 'off']:
-                        result = self._toggle_adapter(state)
-                        ret = f'''
-                        <html>
-                            <head>
-                                <title>WiFi Adapter Toggle Result</title>
-                                <meta http-equiv="refresh" content="3;url=/plugins/ExternalWiFiToggle/">
-                            </head>
-                            <body>
-                                <h1>{result}</h1>
-                                <p>Redirecting back in 3 seconds...</p>
-                            </body>
-                        </html>
-                        '''
-                        return render_template_string(ret)
-                    else:
-                        logging.error(f"[ExternalWiFiToggle] Invalid state value: {state}")
-                        return "Invalid state value"
+                else:
+                    logging.error(f"[ExternalWiFiToggle] Invalid state value: {state}")
+                    return "Invalid state value"
 
         except Exception as e:
             logging.error(f"[ExternalWiFiToggle] Web Error: {str(e)}")
