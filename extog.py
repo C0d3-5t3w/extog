@@ -31,7 +31,7 @@ class ExternalWiFiToggle(plugins.Plugin):
                         </head>
                         <body>
                             <h1>WiFi Adapter Toggle</h1>
-                            <form method="POST" action="toggle">
+                            <form method="POST" action="/plugins/ExternalWiFiToggle/toggle">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="submit" name="state" value="ON" style="font-size: 20px; padding: 10px 20px; margin: 5px;" title="Enable External Adapter">
                                 <input type="submit" name="state" value="OFF" style="font-size: 20px; padding: 10px 20px; margin: 5px;" title="Use Internal Adapter">
@@ -42,23 +42,24 @@ class ExternalWiFiToggle(plugins.Plugin):
                     '''
                     return render_template_string(ret)
 
-            elif request.method == "POST" and path == "toggle":
-                state = request.form.get('state', '').lower()
-                if state in ['on', 'off']:
-                    result = self._toggle_adapter(state)
-                    ret = f'''
-                    <html>
-                        <head>
-                            <title>WiFi Adapter Toggle Result</title>
-                            <meta http-equiv="refresh" content="3;url=./">
-                        </head>
-                        <body>
-                            <h1>{result}</h1>
-                            <p>Redirecting back in 3 seconds...</p>
-                        </body>
-                    </html>
-                    '''
-                    return render_template_string(ret)
+            elif request.method == "POST":
+                if path == "/" or path == "toggle":  # Handle both root and toggle paths
+                    state = request.form.get('state', '').lower()
+                    if state in ['on', 'off']:
+                        result = self._toggle_adapter(state)
+                        ret = f'''
+                        <html>
+                            <head>
+                                <title>WiFi Adapter Toggle Result</title>
+                                <meta http-equiv="refresh" content="3;url=./">
+                            </head>
+                            <body>
+                                <h1>{result}</h1>
+                                <p>Redirecting back in 3 seconds...</p>
+                            </body>
+                        </html>
+                        '''
+                        return render_template_string(ret)
 
         except Exception as e:
             logging.error(f"[ExternalWiFiToggle] Web Error: {str(e)}")
@@ -68,7 +69,7 @@ class ExternalWiFiToggle(plugins.Plugin):
 
     def _toggle_adapter(self, state):
         try:
-            process = subprocess.Popen(['sudo', 'extog'], 
+            process = subprocess.Popen(['extog'], 
                                     stdin=subprocess.PIPE, 
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
