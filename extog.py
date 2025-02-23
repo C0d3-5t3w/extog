@@ -101,7 +101,7 @@ class ExternalWiFiToggle(plugins.Plugin):
             if process.returncode != 0:
                 raise Exception(f"Process failed with return code {process.returncode}")
             
-            return f"WiFi adapter switched to {'external' if state == 'on' else 'internal'} successfully"
+            return f"WiFi adapter switched to {'external' if state == 'on' else state == 'off'} successfully"
         except Exception as e:
             logging.error(f"[ExternalWiFiToggle] Error: {str(e)}")
             return f"Error toggling WiFi adapter: {str(e)}"
