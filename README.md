@@ -12,10 +12,6 @@
 
 * cd ~/extog
 
-* sudo chmod +x extog.py
-
-* sudo mv extog.py /usr/local/share/pwnagotchi/custom-plugins/
-
 * sudo make build
 
 * sudo chmod +x toggle
